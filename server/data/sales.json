@@ -1,0 +1,22 @@
+[
+  {
+    "productId": 1,
+    "unitsSoldLast7Days": 12
+  },
+  {
+    "productId": 2,
+    "unitsSoldLast7Days": 3
+  },
+  {
+    "productId": 3,
+    "unitsSoldLast7Days": 15
+  },
+  {
+    "productId": 4,
+    "unitsSoldLast7Days": 5
+  },
+  {
+    "productId": 5,
+    "unitsSoldLast7Days": 9
+  }
+]

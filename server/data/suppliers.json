@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "Shree Textiles",
+    "contact": "9876543210",
+    "products": [1, 3]
+  },
+  {
+    "id": 2,
+    "name": "Royal Fabrics",
+    "contact": "9876501234",
+    "products": [2, 5]
+  },
+  {
+    "id": 3,
+    "name": "Fashion Wholesale Hub",
+    "contact": "9867001122",
+    "products": [4]
+  }
+]

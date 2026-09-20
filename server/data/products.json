@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "Banarasi Silk Saree",
+    "category": "Saree",
+    "stock": 4,
+    "price": 4999,
+    "reorderLevel": 5
+  },
+  {
+    "id": 2,
+    "name": "Cotton Printed Saree",
+    "category": "Saree",
+    "stock": 18,
+    "price": 1299,
+    "reorderLevel": 8
+  },
+  {
+    "id": 3,
+    "name": "Kanjivaram Silk Saree",
+    "category": "Saree",
+    "stock": 2,
+    "price": 7999,
+    "reorderLevel": 5
+  },
+  {
+    "id": 4,
+    "name": "Georgette Party Wear Saree",
+    "category": "Saree",
+    "stock": 12,
+    "price": 2499,
+    "reorderLevel": 6
+  },
+  {
+    "id": 5,
+    "name": "Linen Saree",
+    "category": "Saree",
+    "stock": 3,
+    "price": 1899,
+    "reorderLevel": 5
+  }
+]
