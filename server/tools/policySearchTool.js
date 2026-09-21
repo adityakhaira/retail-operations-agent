@@ -11,7 +11,9 @@ const policyFiles = {
     return: "return-policy.txt"
 };
 
+
 function loadPolicy(policyName) {
+
     const fileName =
         policyFiles[policyName];
 
@@ -33,11 +35,32 @@ function loadPolicy(policyName) {
     );
 }
 
+
 function searchPolicies(query) {
+
+    // Gemini may send:
+    // "reorder policy"
+    // OR:
+    // { query: "reorder policy" }
+
+    if (
+        typeof query === "object" &&
+        query !== null
+    ) {
+        query = query.query;
+    }
+
+    if (typeof query !== "string") {
+        throw new Error(
+            "Policy search requires a text query."
+        );
+    }
+
     const text =
         query.toLowerCase();
 
     const results = [];
+
 
     if (
         text.includes("reorder") ||
@@ -52,6 +75,7 @@ function searchPolicies(query) {
         });
     }
 
+
     if (
         text.includes("supplier") ||
         text.includes("vendor")
@@ -62,6 +86,7 @@ function searchPolicies(query) {
                 loadPolicy("supplier")
         });
     }
+
 
     if (
         text.includes("discount") ||
@@ -75,6 +100,7 @@ function searchPolicies(query) {
         });
     }
 
+
     if (
         text.includes("return") ||
         text.includes("refund")
@@ -86,8 +112,10 @@ function searchPolicies(query) {
         });
     }
 
+
     return results;
 }
+
 
 module.exports = {
     loadPolicy,
