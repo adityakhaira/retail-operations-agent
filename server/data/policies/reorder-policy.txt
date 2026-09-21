@@ -1,0 +1,19 @@
+RETAIL STORE REORDER POLICY
+
+1. A product should be considered for reordering when current stock is below the expected demand for the next 7 days.
+
+2. Expected 7-day demand should be estimated using recent sales data.
+
+3. The recommended reorder quantity should cover the expected 7-day demand while considering current stock.
+
+4. Products with sufficient stock should not be reordered.
+
+5. A purchase order created by the system must remain PENDING_APPROVAL until the store owner approves it.
+
+6. The system must not execute a purchase order before human approval.
+
+7. After execution, the purchase order should be verified and recorded in the activity log.
+
+8. The agent should use actual inventory and sales data when making reorder recommendations.
+
+9. The agent must not invent stock levels, sales numbers, suppliers, or quantities.

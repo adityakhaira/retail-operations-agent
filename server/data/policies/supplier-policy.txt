@@ -1,0 +1,15 @@
+RETAIL STORE SUPPLIER POLICY
+
+1. Products should be ordered from their assigned supplier whenever supplier information is available.
+
+2. The agent should identify the supplier associated with a product before creating a purchase order.
+
+3. Supplier contact information may be shown to the store owner when needed for operational purposes.
+
+4. The agent must not invent supplier names or contact information.
+
+5. A purchase order may contain products from multiple suppliers.
+
+6. Supplier orders are considered simulated in this prototype unless an external supplier integration is explicitly connected.
+
+7. The system must not claim that a real supplier was contacted when only a simulated execution was performed.

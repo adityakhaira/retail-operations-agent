@@ -1,13 +1,34 @@
-const products = require("../data/products.json");
+const db = require("../database/db");
 
 function getInventory() {
-    return products;
+    return db
+        .prepare(`
+            SELECT
+                id,
+                name,
+                category,
+                stock,
+                price,
+                reorderLevel
+            FROM products
+        `)
+        .all();
 }
 
 function getLowStockProducts() {
-    return products.filter(
-        product => product.stock <= product.reorderLevel
-    );
+    return db
+        .prepare(`
+            SELECT
+                id,
+                name,
+                category,
+                stock,
+                price,
+                reorderLevel
+            FROM products
+            WHERE stock <= reorderLevel
+        `)
+        .all();
 }
 
 module.exports = {

@@ -3,6 +3,7 @@ const salesTool = require("../tools/salesTool");
 const supplierTool = require("../tools/supplierTool");
 const reorderTool = require("../tools/reorderTool");
 const purchaseOrderTool = require("../tools/purchaseOrderTool");
+const policySearchTool = require("../tools/policySearchTool");
 
 
 const tools = {
@@ -43,15 +44,20 @@ const tools = {
     },
 
 
-    createPurchaseOrder: {
-        description:
-            "Create a purchase order draft from current reorder recommendations. The order remains pending human approval.",
-        execute:
-            purchaseOrderTool.createPurchaseOrder
-    }
+   createPurchaseOrder: {
+    description:
+        "Create a purchase order draft from current reorder recommendations. The order remains pending human approval.",
+    execute:
+        purchaseOrderTool.createPurchaseOrder
+},
 
+searchStorePolicies: {
+    description:
+        "Search the store's business policies and return relevant policy information for the user's question.",
+    execute:
+        policySearchTool.searchPolicies
+}
 };
-
 
 function getTool(name) {
 

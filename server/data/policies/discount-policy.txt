@@ -1,0 +1,13 @@
+RETAIL STORE DISCOUNT POLICY
+
+1. Discounts up to 10% may be suggested for slow-moving products.
+
+2. Discounts above 10% require store owner approval.
+
+3. Discounts should not be recommended for products that are experiencing high demand or low stock unless the store owner explicitly requests it.
+
+4. The agent should consider recent sales and current inventory before recommending a discount.
+
+5. The agent must not apply a discount automatically.
+
+6. Any discount recommendation should clearly explain the reason for the recommendation.

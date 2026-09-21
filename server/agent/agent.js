@@ -1,30 +1,26 @@
 const { askGemini } = require("../services/gemini");
-
-const {
-    getTool,
-    getToolDescriptions
-} = require("./toolRegistry");
-
+const { getTool, getToolDescriptions } = require("./toolRegistry");
 const { systemPrompt } = require("./prompts");
-
-const {
-    logActivity
-} = require("../tools/activityLogTool");
-
-
-// ======================================================
-// DETERMINE TOOL FROM USER REQUEST
-// ======================================================
+const { logActivity } = require("../tools/activityLogTool");
 
 function detectToolFromMessage(message) {
-
     const text = message.toLowerCase();
 
+    // POLICY QUESTIONS
+    if (
+        text.includes("policy") ||
+        text.includes("rule") ||
+        text.includes("rules") ||
+        text.includes("discount") ||
+        text.includes("return") ||
+        text.includes("refund") ||
+        text.includes("supplier policy") ||
+        text.includes("reorder policy")
+    ) {
+        return "searchStorePolicies";
+    }
 
-    // --------------------------------------------------
     // SUPPLIER QUESTIONS
-    // --------------------------------------------------
-
     if (
         text.includes("supplier") ||
         text.includes("suppliers") ||
@@ -34,45 +30,33 @@ function detectToolFromMessage(message) {
         return "getSuppliers";
     }
 
+    // REORDER QUESTIONS
+    if (
+        text.includes("what should i reorder") ||
+        text.includes("what should i restock") ||
+        text.includes("what do i need to reorder") ||
+        text.includes("how much should i reorder") ||
+        text.includes("how much should i restock") ||
+        text.includes("reorder recommendation") ||
+        text.includes("reorder recommendations") ||
+        text.includes("recommended reorder") ||
+        text.includes("recommended restock")
+    ) {
+        return "getReorderRecommendations";
+    }
 
-// --------------------------------------------------
-// REORDER RECOMMENDATION QUESTIONS
-// --------------------------------------------------
+    // LOW STOCK QUESTIONS
+    if (
+        text.includes("restock") ||
+        text.includes("restocking") ||
+        text.includes("low stock") ||
+        text.includes("running out") ||
+        text.includes("need to reorder")
+    ) {
+        return "getLowStockProducts";
+    }
 
-if (
-    text.includes("what should i reorder") ||
-    text.includes("what should i restock") ||
-    text.includes("what do i need to reorder") ||
-    text.includes("how much should i reorder") ||
-    text.includes("how much should i restock") ||
-    text.includes("reorder recommendation") ||
-    text.includes("reorder recommendations") ||
-    text.includes("recommended reorder") ||
-    text.includes("recommended restock")
-) {
-    return "getReorderRecommendations";
-}
-
-
-// --------------------------------------------------
-// LOW STOCK / RESTOCKING
-// --------------------------------------------------
-
-if (
-    text.includes("restock") ||
-    text.includes("restocking") ||
-    text.includes("low stock") ||
-    text.includes("running out") ||
-    text.includes("need to reorder")
-) {
-    return "getLowStockProducts";
-}
-
-
-    // --------------------------------------------------
     // SALES QUESTIONS
-    // --------------------------------------------------
-
     if (
         text.includes("sales") ||
         text.includes("sold") ||
@@ -83,11 +67,7 @@ if (
         return "getSalesData";
     }
 
-
-    // --------------------------------------------------
-    // GENERAL INVENTORY QUESTIONS
-    // --------------------------------------------------
-
+    // INVENTORY QUESTIONS
     if (
         text.includes("inventory") ||
         text.includes("stock") ||
@@ -96,33 +76,21 @@ if (
         return "getInventory";
     }
 
-
-    // No obvious tool
     return null;
 }
 
-
-// ======================================================
-// MAIN AGENT
-// ======================================================
-
 async function runAgent(userMessage) {
-
-
-    // ==================================================
-    // STEP 1: TRY DETERMINISTIC TOOL DETECTION
-    // ==================================================
-
-    let selectedTool = detectToolFromMessage(userMessage);
-
+    let selectedTool =
+        detectToolFromMessage(userMessage);
 
     // ==================================================
-    // STEP 2: IF NO CLEAR TOOL, ASK GEMINI
+    // ASK GEMINI TO SELECT TOOL IF KEYWORD ROUTING
+    // DOES NOT FIND ONE
     // ==================================================
 
     if (!selectedTool) {
-
-        const toolDescriptions = getToolDescriptions();
+        const toolDescriptions =
+            getToolDescriptions();
 
         const decisionPrompt = `
 ${systemPrompt}
@@ -153,8 +121,8 @@ Do not add explanations.
 Do not use markdown.
 `;
 
-        const decisionResponse = await askGemini(decisionPrompt);
-
+        const decisionResponse =
+            await askGemini(decisionPrompt);
 
         logActivity({
             type: "tool_decision",
@@ -162,35 +130,28 @@ Do not use markdown.
             decision: decisionResponse
         });
 
-
         try {
+            const cleanedResponse =
+                decisionResponse
+                    .replace(/```json/g, "")
+                    .replace(/```/g, "")
+                    .trim();
 
-            const cleanedResponse = decisionResponse
-                .replace(/```json/g, "")
-                .replace(/```/g, "")
-                .trim();
+            const decision =
+                JSON.parse(cleanedResponse);
 
-            const decision = JSON.parse(cleanedResponse);
-
-
-            if (decision.useTool === true) {
-
-                selectedTool = decision.toolName;
-
+            if (
+                decision.useTool === true
+            ) {
+                selectedTool =
+                    decision.toolName;
             }
-
         } catch (error) {
-
             console.log(
                 "Gemini returned an invalid tool decision."
             );
-
         }
-
     } else {
-
-        // Log deterministic decision
-
         logActivity({
             type: "tool_decision",
             userRequest: userMessage,
@@ -200,16 +161,13 @@ Do not use markdown.
                 method: "keyword_router"
             })
         });
-
     }
 
-
     // ==================================================
-    // STEP 3: NO TOOL
+    // NO TOOL
     // ==================================================
 
     if (!selectedTool) {
-
         return await askGemini(`
 ${systemPrompt}
 
@@ -221,40 +179,46 @@ Answer the user clearly.
 
 Do not invent store data.
 `);
-
     }
 
-
     // ==================================================
-    // STEP 4: GET TOOL
+    // GET TOOL
     // ==================================================
 
-    const tool = getTool(selectedTool);
-
+    const tool =
+        getTool(selectedTool);
 
     if (!tool) {
-
         throw new Error(
             `Unknown tool selected: ${selectedTool}`
         );
-
     }
-
-
-    // ==================================================
-    // STEP 5: EXECUTE TOOL
-    // ==================================================
 
     console.log(
         `Agent selected tool: ${selectedTool}`
     );
 
+    // ==================================================
+    // EXECUTE TOOL
+    // ==================================================
 
-    const toolResult = await tool.execute();
+    let toolResult;
 
+    if (
+        selectedTool ===
+        "searchStorePolicies"
+    ) {
+        toolResult =
+            await tool.execute(
+                userMessage
+            );
+    } else {
+        toolResult =
+            await tool.execute();
+    }
 
     // ==================================================
-    // STEP 6: LOG TOOL EXECUTION
+    // LOG TOOL EXECUTION
     // ==================================================
 
     logActivity({
@@ -263,9 +227,8 @@ Do not invent store data.
         result: toolResult
     });
 
-
     // ==================================================
-    // STEP 7: SEND TOOL RESULT TO GEMINI
+    // FINAL ANSWER
     // ==================================================
 
     const finalPrompt = `
@@ -279,31 +242,38 @@ The agent selected this tool:
 
 ${selectedTool}
 
-The tool returned the following REAL store data:
+The tool returned the following data:
 
-${JSON.stringify(toolResult, null, 2)}
+${JSON.stringify(
+    toolResult,
+    null,
+    2
+)}
 
-Answer the user's question using ONLY this data.
+IMPORTANT INSTRUCTIONS:
 
-Do not say that supplier information is unavailable
-if supplier information exists in the tool result.
+1. The tool result above contains information retrieved from the store's internal data or policy documents.
 
-Do not invent information.
+2. Use the tool result to answer the user's question.
 
-Give a clear answer using bullet points where useful.
+3. If the tool result contains the answer, DO NOT say that the information is unavailable.
+
+4. DO NOT claim that you need the user to provide the policy if the policy content is present in the tool result.
+
+5. Do not invent information that is not present in the tool result.
+
+6. Clearly explain the relevant information.
+
+7. If this is a store policy question, explicitly identify that the answer comes from the store policy.
+
+Answer the user directly.
 `;
 
-
-    // ==================================================
-    // STEP 8: FINAL AI RESPONSE
-    // ==================================================
-
-    const finalAnswer = await askGemini(finalPrompt);
-
+    const finalAnswer =
+        await askGemini(finalPrompt);
 
     return finalAnswer;
 }
-
 
 module.exports = {
     runAgent

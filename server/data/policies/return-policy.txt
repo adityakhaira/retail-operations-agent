@@ -1,0 +1,13 @@
+RETAIL STORE RETURN POLICY
+
+1. Customers may request a return within 7 days of delivery.
+
+2. Products must be unused and in resalable condition.
+
+3. Products that are damaged after delivery by the customer may not qualify for a return.
+
+4. The store owner may review exceptional return requests manually.
+
+5. Refund decisions should not be automatically executed by the AI agent.
+
+6. The agent may explain the return policy but should not claim that a refund has been issued unless the store system confirms it.

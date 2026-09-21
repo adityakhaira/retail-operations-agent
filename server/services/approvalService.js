@@ -1,119 +1,96 @@
 const purchaseOrderTool = require("../tools/purchaseOrderTool");
 const { logActivity } = require("../tools/activityLogTool");
 
-
-// ======================================================
-// APPROVE PURCHASE ORDER
-// ======================================================
-
 function approvePurchaseOrder(orderId) {
 
     const order =
         purchaseOrderTool.getPurchaseOrderById(orderId);
 
-
     if (!order) {
-
         throw new Error(
             `Purchase order ${orderId} was not found.`
         );
-
     }
 
-
     if (order.status !== "PENDING_APPROVAL") {
-
         throw new Error(
             `Purchase order ${orderId} is not pending approval.`
         );
-
     }
 
+    const db = require("../database/db");
 
-    order.status = "APPROVED";
+    db.prepare(`
+        UPDATE purchase_orders
+        SET
+            status = ?,
+            approved_at = ?
+        WHERE id = ?
+    `).run(
+        "APPROVED",
+        new Date().toISOString(),
+        orderId
+    );
 
-    order.approvedAt =
-        new Date().toISOString();
-
+    const updatedOrder =
+        purchaseOrderTool.getPurchaseOrderById(orderId);
 
     logActivity({
-
         type: "purchase_order_approved",
-
-        purchaseOrderId:
-            order.id,
-
-        status:
-            order.status
-
+        purchaseOrderId: orderId,
+        status: "APPROVED"
     });
 
-
-    return order;
+    return updatedOrder;
 }
-
-
-// ======================================================
-// REJECT PURCHASE ORDER
-// ======================================================
 
 function rejectPurchaseOrder(orderId, reason = "") {
 
     const order =
         purchaseOrderTool.getPurchaseOrderById(orderId);
 
-
     if (!order) {
-
         throw new Error(
             `Purchase order ${orderId} was not found.`
         );
-
     }
 
-
     if (order.status !== "PENDING_APPROVAL") {
-
         throw new Error(
             `Purchase order ${orderId} is not pending approval.`
         );
-
     }
 
+    const db = require("../database/db");
 
-    order.status = "REJECTED";
+    db.prepare(`
+        UPDATE purchase_orders
+        SET
+            status = ?,
+            rejected_at = ?,
+            rejection_reason = ?
+        WHERE id = ?
+    `).run(
+        "REJECTED",
+        new Date().toISOString(),
+        reason || "No reason provided",
+        orderId
+    );
 
-    order.rejectedAt =
-        new Date().toISOString();
-
-    order.rejectionReason =
-        reason || "No reason provided";
-
+    const updatedOrder =
+        purchaseOrderTool.getPurchaseOrderById(orderId);
 
     logActivity({
-
         type: "purchase_order_rejected",
-
-        purchaseOrderId:
-            order.id,
-
-        reason:
-            order.rejectionReason,
-
-        status:
-            order.status
-
+        purchaseOrderId: orderId,
+        reason: reason || "No reason provided",
+        status: "REJECTED"
     });
 
-
-    return order;
+    return updatedOrder;
 }
 
-
 module.exports = {
-
     approvePurchaseOrder,
-
     rejectPurchaseOrder
-
 };
