@@ -8,39 +8,25 @@ const policySearchTool = require("../tools/policySearchTool");
 const tools = {
 
     getInventory: {
-        description:
-            "Get all products and their current stock levels.",
-        execute:
-            inventoryTool.getInventory
-    },
+    description:
+        "Get the complete current inventory of all store products, including product name, category, stock, price, and reorder level. Use this tool when the user asks to see products, inventory, stock levels, or all products.",
+    execute:
+        inventoryTool.getInventory
+},
 
-    getLowStockProducts: {
-        description:
-            "Get products whose stock is at or below their reorder level.",
-        execute:
-            inventoryTool.getLowStockProducts
-    },
+getLowStockProducts: {
+    description:
+        "Get products whose current stock is at or below their reorder level. Use this tool when the user asks which products are low in stock.",
+    execute:
+        inventoryTool.getLowStockProducts
+},
 
-    getSalesData: {
-        description:
-            "Get recent sales data showing units sold for each product.",
-        execute:
-            salesTool.getSalesData
-    },
-
-    getSuppliers: {
-        description:
-            "Get supplier information.",
-        execute:
-            supplierTool.getSuppliers
-    },
-
-    getReorderRecommendations: {
-        description:
-            "Analyze inventory, sales and suppliers to determine which products need reordering and the recommended quantities.",
-        execute:
-            reorderTool.getReorderRecommendations
-    },
+getReorderRecommendations: {
+    description:
+        "Analyze current inventory, recent 7-day sales, and supplier data to determine which products need reordering and the recommended quantities. Use this tool for questions about what to reorder, what to restock, or recommended reorder quantities.",
+    execute:
+        reorderTool.getReorderRecommendations
+},
 
     createPurchaseOrder: {
         description:

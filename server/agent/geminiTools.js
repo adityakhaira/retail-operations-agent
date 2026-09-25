@@ -10,14 +10,13 @@ function getGeminiFunctionDeclarations() {
 
     return definitions.map(tool => {
 
-        // Policy search needs a query from Gemini.
         if (tool.name === "searchStorePolicies") {
 
             return {
                 name: tool.name,
 
                 description:
-                    tool.description,
+                    "Search the store's business policy documents. IMPORTANT: The only valid policy tool name is searchStorePolicies. Use this tool for reorder, supplier, discount, return, refund, or other store policy questions.",
 
                 parameters: {
                     type: "OBJECT",
@@ -25,8 +24,9 @@ function getGeminiFunctionDeclarations() {
                     properties: {
                         query: {
                             type: "STRING",
+
                             description:
-                                "The store policy information to search for, such as reorder policy, discount policy, supplier policy, or return policy."
+                                "The policy information to search for, such as reorder policy, supplier policy, discount policy, or return policy."
                         }
                     },
 
@@ -37,12 +37,11 @@ function getGeminiFunctionDeclarations() {
             };
         }
 
-        // Tools that currently require no arguments.
         return {
             name: tool.name,
 
             description:
-                tool.description,
+                `${tool.description} Use ONLY this exact tool name when calling this capability.`,
 
             parameters: {
                 type: "OBJECT",
